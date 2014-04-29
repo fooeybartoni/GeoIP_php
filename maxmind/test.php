@@ -6,29 +6,35 @@ use GeoIp2\Database\Reader;
 // lookups.
 $reader = new Reader("/Users/brucegoldfeder/Sites/GeoIP/GeoLite2-City.mmdb");
 
-//read in the IP listings
-$file_handle = fopen("/Users/brucegoldfeder/Sites/GeoIP/hits_http.txt", "r");
+// File to read in, this can be refactored to input arg for generalization
+$IPfile = "/Users/brucegoldfeder/Sites/GeoIP/hits_http.txt";
 
-while (!feof($file_handle) ) {
+getIPfromCSV($reader, $IPfile);
 
-$line_of_text = fgetcsv($file_handle, 1024);
+function getIPfromCSV($reader, $IPfile) {
+	
+	//read in the IP listings
+	$file_handle = fopen($IPfile, "rw");
 
-$IPtoGeo = $line_of_text[1];
+	while (!feof($file_handle) ) {
 
-$calcIP = getIPGeo($IPtoGeo, $reader);
+		$line_of_text = fgetcsv($file_handle, 1024);
 
-print $calcIP . "<BR>";
+		$IPtoGeo = $line_of_text[1];
 
+		$calcIP = printIPGeo($IPtoGeo, $reader);
+
+	}
+
+	fclose($file_handle);
 }
-
-fclose($file_handle);
 
 // Replace "city" with the appropriate method for your database, e.g.,
 // "country".
-function getIPGeo($IPtoGeo, $reader) {
+function printIPGeo($IPtoGeo, $reader) {
 	$record = $reader->city($IPtoGeo);
 
-	print('IP to Geo is: ' . $IPtoGeo);
+	print('IP to Geo is: ' . $IPtoGeo . "\n");
 
 	print($record->country->isoCode . "\n"); // 'US'
 	print($record->country->name . "\n"); // 'United States'
@@ -43,5 +49,6 @@ function getIPGeo($IPtoGeo, $reader) {
 
 	print($record->location->latitude . "\n"); // 44.9733
 	print($record->location->longitude . "\n"); // -93.2323
+	print ("<BR>");
 }
 ?>
