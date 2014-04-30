@@ -1,11 +1,26 @@
 <?php
 require_once '../vendor/autoload.php';
+require 'csv.php';
 use GeoIp2\Database\Reader;
 
 // Initiating function
 $IP_Geo_Array = createIPGeoArray();
 
-print_r($IP_Geo_Array);
+//print_r($IP_Geo_Array);
+
+$Geo_IP_Headers = array(
+			'IP' => ' ',
+			'Country_Code' => ' ',
+			'Country_Name' => ' ',
+			'State_Code' => ' ',
+			'State_Name' => ' ',
+			'City_Name' => ' ',
+			'Postal_Code' => ' ',
+			'Lat' => ' ',
+			'Lon' => ' '
+		);
+
+writeIP_Geo_Csv($Geo_IP_Headers, $IP_Geo_Array, 'testCSV1.csv');
 
 function createIPGeoArray(){
 
@@ -35,6 +50,41 @@ function createIPGeoArray(){
 	}
 
 	return $IP_Geo_Assoc;
+
+}
+
+function writeIP_Geo_Csv($Geo_IP_Headers, $IP_Geo_Assoc, $outFilename) {
+
+	//CSV::export($IP_Geo_Assoc, $IP_Geo_Assoc, $outFilename);
+	//$root = $_SERVER["DOCUMENT_ROOT"] ;
+    $fileName = "/Users/brucegoldfeder/Sites/maxmind/file.csv";
+
+    print('file name is: ' . $fileName);
+
+
+	$fh = fopen($fileName, 'w');
+
+	// write out the headers
+	$all_keys = array_keys($Geo_IP_Headers);
+	//fputcsv($fh, $all_keys);
+
+	print('<BR> number of lines output: ' . count($IP_Geo_Assoc));
+
+	$test = array_keys($IP_Geo_Assoc[1]);
+
+	//print($test[0]);
+
+	fputcsv($fh, $test);
+
+	foreach ($IP_Geo_Assoc as $inner) {
+
+		//foreach ($inner as $data)
+		
+		fputcsv($fh, $inner);
+
+	}
+
+	fclose($fh);
 
 }
 
